@@ -58,14 +58,30 @@ if(isset($_GET["action"])) {
                 // Connexion à la base de données
                 $pdo = new PDO("mysql:host=localhost;dbname=hash;charset=utf8", "root", "");
 
+                // Filter les champs (faille xss)
                 $email    = filter_input(INPUT_POST, "email",  FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_VALIDATE_EMAIL);
                 $password = filter_input(INPUT_POST, "password",  FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
+                
+                // Si les filtres sont valides
                 if($email && $password) {
                     $requete = $pdo->prepare("SELECT * FROM user WHERE email = :email");
                     $requete->execute(["email"=> $email]);
                     $user = $requete->fetch();
-                    var_dump($user);die;
+                    //var_dump($user);die;
+                    // est-ce que l'utilisateur existe
+                    if($user) {
+                        $hash = $user["password"];
+                        if(password_verify($password, $hash)) {
+                            $_SESSION["user"] = $user;
+                            header("Location: home.php");;exit;
+                        } else {
+                            header("Location: login.php");exit;
+                            //Message Utilisateur inconnu ou mot de passe incorrect
+                        }
+                    } else {
+                        header("Location: login.php");exit;
+                        //Message Utilisateur inconnu ou mot de passe incorrect
+                    }
                 }
             }
 
