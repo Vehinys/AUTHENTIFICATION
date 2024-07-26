@@ -8,8 +8,21 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>ACCUEIL</h1>
+    <?php 
+        // Je suis connecté
+        if(isset($_SESSION["user"])) { ?>
 
-    
+            <a href="traitement.php?action=logout">Se deconnecter</a>
+        <?php } else { ?>
+            <a href="traitement.php?action=login">Se connecter</a>
+            <a href="traitement.php?action=register">S'inscrire</a>
+        <?php } ?>
+        
+    <h1>ACCUEIL</h1>
+    <?php 
+        if(isset($_SESSION["user"])) {
+            echo "<p>Bienvenue ".$_SESSION["user"]["pseudo"]."</p>";
+        }
+        ?>
 </body>
 </html>
